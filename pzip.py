@@ -33,15 +33,14 @@ def filelist():
     file_list = []
     fileflag = True                                         # Iniciates the primary flag as True
     while fileflag:
-    while fileflag:
 
         try:                                                # If the user as not given the file names, this fuction asks the user to insert the names of the files he wants to compress/decompress
-            print "Insert name of the file you want to compresse/decompress. To continue enter 'end'"
-            new_file = str(raw_input("File: "))
+            print("Insert name of the file you want to compresse/decompress. To continue enter 'end'")
+            new_file = str(input("File: "))
 
             if new_file != "end" and os.path.isfile("./" + new_file) is False:
-                print "File not found. Do you want to exit(yes/no)?"
-                answer = str(raw_input("Answer: "))
+                print("File not found. Do you want to exit(yes/no)?")
+                answer = str(input("Answer: "))
 
                 if answer == "yes" or answer == "Yes":
                     fileflag = False
@@ -54,7 +53,7 @@ def filelist():
 
             file_list.append(new_file)
 
-        except KeyboardInterrupt:                           # User interrupt sets the primary flag to False and ends the cycle                        
+        except KeyboardInterrupt:                           # User interrupt sets the primary flag to False and ends the cycle
             fileflag = False
 
     return file_list
@@ -89,9 +88,9 @@ def operation_info():
     """
     end = time.time()
     totaltime = end - pzip_start
-    print "Files Processed: " + str(filesDone.value) + " files."
-    print "Total output size: " + str((total_output_size.value)/1024) + "Kb"
-    print "Total time processing: " + str(totaltime)
+    print("Files Processed: " + str(filesDone.value) + " files.")
+    print("Total output size: " + str((total_output_size.value)/1024) + "Kb")
+    print("Total time processing: " + str(totaltime))
 
 
 # Signals & Alarms#
@@ -138,7 +137,7 @@ def compress(item):
     mutex_tval.release()
 
     if args.verbose:
-        print "File compressed by " + str(os.getpid()) + ": " + str(item)
+        print("File compressed by " + str(os.getpid()) + ": " + str(item))
 
     return operation
 
@@ -168,7 +167,7 @@ def decompress(item):
     mutex_tval.release()
 
     if args.verbose:
-        print "File decompressed by " + str(os.getpid()) + ": " + str(item) + "  ( in " + str(elapsed) + " seconds )"
+        print("File decompressed by " + str(os.getpid()) + ": " + str(item) + "  ( in " + str(elapsed) + " seconds )")
 
     return operation
 
@@ -199,7 +198,7 @@ def pzip():
                     nfiles += 1
                     if args.compress:
                         op = compress(item)
-                        p_operations.append(op)                   
+                        p_operations.append(op)
                         p_total_output += os.stat(item + ".zip").st_size
 
                     if args.decompress:
@@ -208,7 +207,7 @@ def pzip():
                         p_total_output += os.stat(item[:-4]).st_size
                 else:
                     if not isitemfile and args.verbose:
-                        print "File not found: " + item
+                        print("File not found: " + item)
                     if args.truncate:
                         files_notfound.value = True
                         flag.value = 1
@@ -237,7 +236,7 @@ def history(queue):
     """
     with open(args.history, "wb+") as history:
         # Stores the start of the execution of the program, the elapsed time, number of processes and the total size in variables
-        start = queue[0]                                
+        start = queue[0]
         elapsed = queue[1]
         nprocesses = queue[2]
         totaloutput = queue[3]
@@ -251,14 +250,14 @@ def history(queue):
         for op in queue:
             if isinstance(op, list):                    # Runs the queue and looks for a list
                 # Saves the pid, the number of files and the total size in variables
-                pid = op[0]                             
+                pid = op[0]
                 nfiles = op[1]
                 ptotaloutput = op[2]
                 # Writes in binary the pid and the number of files inside the file
                 history.write(struct.pack("i", pid))
                 history.write(struct.pack("i", nfiles))
 
-                for operation in op:                    
+                for operation in op:
                     if isinstance(operation, list):
 
                         namesize = operation[0]         # Stores the number of characters of the name in a variable
@@ -349,12 +348,12 @@ pzip_totaltime = pzip_end - pzip_start
 # History file handling
 done_q.put(None)
 queue = doneqtolist(pzip_start, pzip_end, args.processes, total_output_size.value)
-print queue
+print(queue)
 if args.history:
     history(queue)
 
 if args.verbose:
-    print "Files Processed: " + str(filesDone.value) + " files."
-    print "Total input size: " + str(total_input_size.value) + " bytes"
-    print "Total output size: " + str(total_output_size.value) + " bytes"
-    print "Total time processing: " + str(pzip_totaltime)
+    print("Files Processed: " + str(filesDone.value) + " files.")
+    print("Total input size: " + str(total_input_size.value) + " bytes")
+    print("Total output size: " + str(total_output_size.value) + " bytes")
+    print("Total time processing: " + str(pzip_totaltime))
